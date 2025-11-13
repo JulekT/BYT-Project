@@ -1,9 +1,20 @@
-﻿using System.Text.Json;
+﻿using Library;
+using System.Text.Json;
 
 [Serializable]
 public class Store
 {
-    private static List<Store> _extent = new List<Store>();
+    private static List<Store> _extent = new();
+    public static List<Store> Extent
+    {
+        get => _extent;
+        set
+        {
+            if (value == null)
+                throw new ArgumentException("Store Extent is null");
+            _extent = value;
+        }
+    }
 
     private string _name;
     private string _street;
@@ -13,7 +24,12 @@ public class Store
 
     public string Name
     {
-        get => _name;
+        get
+        {
+            if (String.IsNullOrWhiteSpace(_name))
+                throw new ValueNotAssigned("Store name is empty, you need to assign it first");
+            return _name;
+        }
         set
         {
             if (String.IsNullOrWhiteSpace(value))
@@ -24,7 +40,12 @@ public class Store
 
     public string Street
     {
-        get => _street;
+        get
+        {
+            if (String.IsNullOrWhiteSpace(_street))
+                throw new ValueNotAssigned("Store street is empty, you need to assign it first");
+            return _street;
+        }
         set
         {
             if (String.IsNullOrWhiteSpace(value))
@@ -35,7 +56,12 @@ public class Store
 
     public string City
     {
-        get => _city;
+        get
+        {
+            if (String.IsNullOrWhiteSpace(_city))
+                throw new ValueNotAssigned("Store city is empty, you need to assign it first");
+            return _city;
+        }
         set
         {
             if (String.IsNullOrWhiteSpace(value))
@@ -46,7 +72,12 @@ public class Store
 
     public string PostalCode
     {
-        get => _postalCode;
+        get
+        {
+            if (String.IsNullOrWhiteSpace(_postalCode))
+                throw new ValueNotAssigned("Store postal code is empty, you need to assign it first");
+            return _postalCode;
+        }
         set
         {
             if (String.IsNullOrWhiteSpace(value))
@@ -57,7 +88,12 @@ public class Store
 
     public string Country
     {
-        get => _country;
+        get
+        {
+            if (String.IsNullOrWhiteSpace(_country))
+                throw new ValueNotAssigned("Store country is empty, you need to assign it first");
+            return _country;
+        }
         set
         {
             if (String.IsNullOrWhiteSpace(value))
@@ -75,19 +111,14 @@ public class Store
         City = city;
         PostalCode = postalCode;
         Country = country;
-
-        AddStore(this);
     }
 
-    private static void AddStore(Store s)
+    public static void AddStoreToExtent(Store s)
     {
-        if (s == null) throw new ArgumentException("Store cannot be null");
+        if (s == null) 
+            throw new ArgumentException("Store cannot be null");
         _extent.Add(s);
     }
-
-    public static List<Store> GetExtent() => new List<Store>(_extent);
-
-    public static void SetExtent(List<Store> list) => _extent = list ?? new List<Store>();
 
     public static void SaveExtent(string fileName = "store_extent.json")
     {

@@ -1,13 +1,31 @@
-﻿[Serializable]
+﻿using Library;
+
+[Serializable]
 public class Aisle
 {
-    private static List<Aisle> _extent = new List<Aisle>();
+    private static List<Aisle> _extent = new();
+    public static List<Aisle> Extent
+    {
+        get => _extent;
+        set
+        {
+            if (value == null)
+                throw new ArgumentException("Aisle Extent is null");
+            _extent = value;
+        }
+    }
 
     private string _name;
 
     public string Name
     {
-        get => _name;
+        get
+        {
+            if (String.IsNullOrEmpty(_name))
+                throw new ValueNotAssigned("Aisle name is empty, you need to assign it firstly");
+            else
+                return _name;
+        }
         set
         {
             if (String.IsNullOrWhiteSpace(value))
@@ -18,16 +36,12 @@ public class Aisle
 
     public Aisle() { }
 
-    public Aisle(string name)
-    {
-        Name = name;
+    public Aisle(string name) => Name = name;
 
-        AddAisle(this);
-    }
-
-    private static void AddAisle(Aisle a)
+    public static void AddAisleToExtent(Aisle a)
     {
-        if (a == null) throw new ArgumentException("Aisle cannot be null");
+        if (a == null) 
+            throw new ArgumentException("Aisle cannot be null");
         _extent.Add(a);
     }
 
