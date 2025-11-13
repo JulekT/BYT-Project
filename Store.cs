@@ -89,4 +89,22 @@ public class Store
     public static List<Store> GetExtent() => new List<Store>(_extent);
 
     public static void SetExtent(List<Store> list) => _extent = list ?? new List<Store>();
+
+    public static void SaveExtent(string fileName = "store_extent.json")
+    {
+        var json = JsonSerializer.Serialize(
+            _extent,
+            new JsonSerializerOptions { WriteIndented = true }
+        );
+        File.WriteAllText(fileName, json);
+    }
+
+    public static void LoadExtent(string fileName = "store_extent.json")
+    {
+        if (!File.Exists(fileName))
+            return;
+
+        var json = File.ReadAllText(fileName);
+        _extent = JsonSerializer.Deserialize<List<Store>>(json);
+    }
 }
