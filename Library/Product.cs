@@ -1,7 +1,4 @@
-﻿using System;
-
-
-[Serializable]
+﻿[Serializable]
 public class Product
 {
     private static List<Product> _extent = new List<Product>();
