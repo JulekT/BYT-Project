@@ -48,4 +48,18 @@ public class Aisle
     public static List<Aisle> GetExtent() => new List<Aisle>(_extent);
 
     public static void SetExtent(List<Aisle> list) => _extent = list ?? new List<Aisle>();
+
+    public static void SaveExtent(string fileName = "aisle_extent.json")
+    {
+        var json = JsonSerializer.Serialize(_extent, new JsonSerializerOptions { WriteIndented = true });
+        File.WriteAllText(fileName, json);
+    }
+
+    public static void LoadExtent(string fileName = "aisle_extent.json")
+    {
+        if (!File.Exists(fileName)) return;
+
+        var json = File.ReadAllText(fileName);
+        _extent = JsonSerializer.Deserialize<List<Aisle>>(json);
+    }
 }
