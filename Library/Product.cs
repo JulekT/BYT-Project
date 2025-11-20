@@ -115,6 +115,8 @@ public class Product
         Model = model;
         Price = price;
         Cost = cost;
+
+        AddProductToExtent(this);
     }
 
     public static void AddProductToExtent(Product p)
@@ -125,4 +127,20 @@ public class Product
     }
 
     public static void SetExtent(List<Product> list) => Extent = list ?? new List<Product>();
+
+    public static void SaveExtent(string fileName = "product_extent.json")
+    {
+        var json = JsonSerializer.Serialize(Extent, new JsonSerializerOptions { WriteIndented = true });
+        File.WriteAllText(fileName, json);
+    }
+
+    public static void LoadExtent(string fileName = "product_extent.json")
+    {
+        if (!File.Exists(fileName)) return;
+
+        var json = File.ReadAllText(fileName);
+        Extent = JsonSerializer.Deserialize<List<Product>>(json);
+    }
+
+    
 }
