@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Text.Json;
 using System.IO;
+using BYT_Project;
 
 [Serializable]
 public class Order
@@ -26,13 +27,21 @@ public class Order
 
 
 
-    public Order()
+    public SalesPerson SalesPerson { get; private set; }
+
+    public Order(SalesPerson salesPerson)
     {
+        if (salesPerson == null)
+            throw new ArgumentException("Order must be associated with a SalesPerson.");
+
+        SalesPerson = salesPerson;
+
         OrderID = ++_lastID;
         OrderDate = DateTime.Now;
 
         Extent.Add(this);
     }
+
 
     public void AddProduct(Product product, int quantity)
     {
