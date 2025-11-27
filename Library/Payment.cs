@@ -7,7 +7,19 @@ namespace BYT_Project
 {
     public abstract class Payment
     {
+        private static List<Payment> _extent = new();
+        public static List<Payment> Extent
+        {
+            get => _extent;
+            private set => _extent = value ?? new List<Payment>();
+        }
 
+        public static void AddToExtent(Payment p)
+        {
+            if (p == null) throw new ArgumentException("Payment cannot be null");
+            _extent.Add(p);
+        }
+        
         private int _paymentID;
         private double _amount;
         private DateTime _date;
@@ -65,6 +77,25 @@ namespace BYT_Project
             _paymentID = paymentID;
             _amount = amount;
             _date = date;
+        }
+
+        public static void SaveExtent(string fileName = "payment_extent.json")
+        {
+            var json = JsonSerializer.Serialize(
+                _extent,
+                new JsonSerializerOptions { WriteIndented = true }
+            );
+
+            File.WriteAllText(fileName, json);
+        }
+
+        public static void LoadExtent(string fileName = "payment_extent.json")
+        {
+            if (!File.Exists(fileName))
+                return;
+
+            var json = File.ReadAllText(fileName);
+            _extent = JsonSerializer.Deserialize<List<Payment>>(json);
         }
 
     }
