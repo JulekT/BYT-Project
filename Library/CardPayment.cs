@@ -1,5 +1,5 @@
-﻿using System;
-using Library; 
+﻿using Library; 
+using System;
 public class CardPayment : Payment
 {
 	public enum CardType
@@ -24,7 +24,12 @@ public class CardPayment : Payment
             _cardNumber = value;
         }
     }
-    public CardPayment()
+    public CardPayment(int paymentID, double amount, DateTime date,string cardNumber, CardType cardType)
+    {
+        base(paymentID,amount,date);
+        this._cardNumber = cardNumber;
+        this._cardType = cardType;
+    }
 	{
 	}
 }
