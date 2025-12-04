@@ -33,6 +33,21 @@ public class Aisle
             _name = value;
         }
     }
+    
+    public Store Store { get; private set; }
+    
+    internal void SetStore(Store s)
+    {
+        if (s == null)
+            throw new ArgumentException("Store cannot be null.");
+
+        Store = s;
+    }
+    
+    internal void RemoveStore()
+    {
+        Store = null;
+    }
 
     public Aisle() { }
 
