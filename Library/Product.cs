@@ -121,7 +121,7 @@ public class Product
 
     public static void AddProductToExtent(Product p)
     {
-        if (p == null) 
+        if (p == null)
             throw new ArgumentException("Product cannot be null");
         Extent.Add(p);
     }
@@ -142,5 +142,14 @@ public class Product
         Extent = JsonSerializer.Deserialize<List<Product>>(json);
     }
 
-    
+    public Supplier Supplier { get; private set; }
+
+    public void SetSupplier(Supplier supplier)
+    {
+        if (supplier == null)
+            throw new ArgumentNullException("Supplier cannot be null");
+
+        Supplier = supplier;
+    }
+
 }
