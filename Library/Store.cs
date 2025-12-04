@@ -102,6 +102,49 @@ public class Store
         }
     }
 
+    private HashSet<Aisle> _aisles = new HashSet<Aisle>();
+
+
+    public IReadOnlyCollection<Aisle> Aisles => _aisles.ToList().AsReadOnly();
+    
+    public void AddAisle(Aisle aisle)
+    {
+        if (aisle == null)
+            throw new ArgumentException("Aisle cannot be null.");
+        
+        if (aisle.Store != null && aisle.Store != this)
+            throw new InvalidOperationException("This aisle already belongs to another store.");
+        
+        if (_aisles.Contains(aisle))
+            throw new InvalidOperationException("This aisle is already added to this store.");
+
+        _aisles.Add(aisle);
+
+        
+        aisle.SetStore(this);
+    }
+    
+    
+    public void RemoveAisle(Aisle aisle)
+    {
+        if (aisle == null)
+            throw new ArgumentException("Aisle cannot be null.");
+
+        if (!_aisles.Contains(aisle))
+            throw new InvalidOperationException("This aisle does not belong to this store.");
+
+        
+        if (_aisles.Count == 1)
+            throw new InvalidOperationException("A store must have at least one aisle (1..*). Cannot remove the last one.");
+
+       
+        _aisles.Remove(aisle);
+
+        
+        aisle.RemoveStore();
+    }
+
+
     public Store() { }
 
     public Store(string name, string street, string city, string postalCode, string country)
