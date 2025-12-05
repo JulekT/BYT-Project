@@ -151,5 +151,16 @@ public class Product
 
         Supplier = supplier;
     }
+    public Aisle Aisle { get; private set; }
+
+    internal void SetAisle(Aisle aisle)
+    {
+        Aisle = aisle;
+    }
+
+    internal void RemoveAisle()
+    {
+        Aisle = null;
+    }
 
 }

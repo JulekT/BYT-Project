@@ -48,6 +48,40 @@ public class Aisle
     {
         Store = null;
     }
+    
+    private HashSet<Product> _products = new HashSet<Product>();
+
+    public IReadOnlyCollection<Product> Products => _products.ToList().AsReadOnly();
+
+    public void AddProduct(Product p)
+    {
+        if (p == null)
+            throw new ArgumentException("Product cannot be null.");
+
+        if (_products.Contains(p))
+            throw new InvalidOperationException("Product is already in this aisle.");
+        
+        if (p.Aisle != null && p.Aisle != this)
+            p.Aisle.RemoveProduct(p);
+
+        _products.Add(p);
+        
+        p.SetAisle(this);
+    }
+
+    public void RemoveProduct(Product p)
+    {
+        if (p == null)
+            throw new ArgumentException("Product cannot be null.");
+
+        if (!_products.Contains(p))
+            throw new InvalidOperationException("Product does not belong to this aisle.");
+
+        _products.Remove(p);
+        
+        p.RemoveAisle();
+    }  
+
 
     public Aisle() { }
 
