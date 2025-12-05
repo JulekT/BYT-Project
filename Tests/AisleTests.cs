@@ -13,11 +13,10 @@ namespace Tests
         public void Setup()
         {
             emptyAisle = new Aisle();
-
             namedAisle = new Aisle("Laptops");
         }
 
-        
+    
         [Test]
         public void AisleNameAssignEmptinessException()
         {
@@ -25,7 +24,6 @@ namespace Tests
             Assert.That(ex.Message, Is.EqualTo("Aisle name cannot be empty"));
         }
 
-        
         [Test]
         public void AisleNameGetEmptinessException()
         {
@@ -33,7 +31,7 @@ namespace Tests
             Assert.That(ex.Message, Is.EqualTo("Aisle name is empty, you need to assign it firstly"));
         }
 
-        
+   
         [Test]
         public void AddProduct_Null_ThrowsException()
         {
@@ -43,11 +41,9 @@ namespace Tests
             Assert.That(ex.Message, Is.EqualTo("Product cannot be null."));
         }
 
-        
         [Test]
         public void AddProduct_AddsCorrectly()
         {
-        
             var p = new Product("Gaming Mouse", "Logitech", "G502 Hero", 250, 150);
 
             namedAisle.AddProduct(p);
@@ -56,6 +52,7 @@ namespace Tests
             Assert.That(p.Aisle, Is.EqualTo(namedAisle));
         }
 
+   
         [Test]
         public void RemoveProduct_RemovesCorrectly()
         {
@@ -64,6 +61,18 @@ namespace Tests
             namedAisle.AddProduct(p);
             namedAisle.RemoveProduct(p);
 
+            Assert.That(namedAisle.Products.Count, Is.EqualTo(0));
+            Assert.That(p.Aisle, Is.Null);
+        }
+
+        [Test]
+        public void RemoveProduct_WhenProductNotInAisle_DoesNothing()
+        {
+            var p = new Product("Keyboard", "Keychron", "K6", 400, 250);
+
+           
+
+            Assert.DoesNotThrow(() => namedAisle.RemoveProduct(p));
             Assert.That(namedAisle.Products.Count, Is.EqualTo(0));
             Assert.That(p.Aisle, Is.Null);
         }
