@@ -18,11 +18,8 @@ namespace Tests
         {
             var supplier = new Supplier("Xiaomi Supplier");
             var product = new Product("Xiaomi 12", "Xiaomi", "12", 2000, 1200);
-
             supplier.AddProduct(product);
-
             var result = supplier.GetProductByModel("12");
-
             Assert.That(result, Is.EqualTo(product));
         }
 
@@ -31,9 +28,7 @@ namespace Tests
         {
             var supplier = new Supplier("Sony Supplier");
             var product = new Product("Headphones", "Sony", "XM5", 1500, 900);
-
             supplier.AddProduct(product);
-
             Assert.That(product.Supplier, Is.EqualTo(supplier));
         }
     }
