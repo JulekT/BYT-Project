@@ -14,12 +14,9 @@ namespace Tests
         public void Setup()
         {
             Product.Extent.Clear();
-
             emptyProduct = new Product();
             fullProduct = new Product("Laptop", "Lenovo", "IdeaPad 5", 3200, 2500);
         }
-
-
 
         [Test]
         public void ProductNameAssignEmptinessException()
@@ -35,8 +32,6 @@ namespace Tests
             Assert.That(ex.Message, Is.EqualTo("Product name is empty, you need to assign it first"));
         }
 
-      
-
         [Test]
         public void ProductBrandAssignEmptinessException()
         {
@@ -50,8 +45,6 @@ namespace Tests
             var ex = Assert.Throws<ValueNotAssigned>(() => Console.WriteLine(emptyProduct.Brand));
             Assert.That(ex.Message, Is.EqualTo("Product brand is empty, you need to assign it first"));
         }
-
-    
 
         [Test]
         public void ProductModelAssignEmptinessException()
@@ -67,7 +60,6 @@ namespace Tests
             Assert.That(ex.Message, Is.EqualTo("Product model is empty, you need to assign it first"));
         }
 
-    
 
         [Test]
         public void ProductPriceAssignNegativeException()
@@ -84,7 +76,6 @@ namespace Tests
         }
 
      
-
         [Test]
         public void ProductCostAssignNegativeException()
         {
@@ -104,9 +95,7 @@ namespace Tests
         public void ProductExtent_AddsCorrectly()
         {
             int oldCount = Product.Extent.Count;
-
             var p = new Product("Smartphone", "Samsung", "Galaxy S23", 4500, 3800);
-
             Assert.That(Product.Extent.Count, Is.EqualTo(oldCount + 1));
         }
 
@@ -130,12 +119,9 @@ namespace Tests
         {
             var p = new Product("TV", "Sony", "Bravia", 3000, 2200);
             Product.AddProductToExtent(p);
-
             Product.SaveExtent();
             Product.Extent.Clear();
-
             Product.LoadExtent();
-
             Assert.That(Product.Extent.Count > 0, Is.True, "Loading didn’t work");
         }
 
@@ -145,9 +131,7 @@ namespace Tests
         {
             var aisle = new Aisle("Laptops");
             var product = new Product("Gaming Laptop", "ASUS", "ROG Strix G17", 7500, 6000);
-
             aisle.AddProduct(product);
-
             Assert.That(product.Aisle, Is.EqualTo(aisle));
             Assert.That(aisle.Products.Count, Is.EqualTo(1));
         }
