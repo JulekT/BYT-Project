@@ -1,114 +1,116 @@
-﻿using Library;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.IO;
+using System.Text.Json;
 
-[Serializable]
-public class Aisle
+namespace Library
 {
-    private static List<Aisle> _extent = new();
-    public static List<Aisle> Extent
+    [Serializable]
+    public class Aisle
     {
-        get => _extent;
-        set
+
+        private static List<Aisle> _extent = new();
+        public static IReadOnlyCollection<Aisle> Extent => _extent.AsReadOnly();
+
+        public static void SaveExtent(string fileName = "aisle_extent.json")
         {
-            if (value == null)
-                throw new ArgumentException("Aisle Extent is null");
-            _extent = value;
+            var json = JsonSerializer.Serialize(_extent, new JsonSerializerOptions { WriteIndented = true });
+            File.WriteAllText(fileName, json);
         }
-    }
 
-    private string _name;
-
-    public string Name
-    {
-        get
+        public static void LoadExtent(string fileName = "aisle_extent.json")
         {
-            if (String.IsNullOrEmpty(_name))
-                throw new ValueNotAssigned("Aisle name is empty, you need to assign it firstly");
-            else
-                return _name;
+            if (!File.Exists(fileName)) return;
+            var json = File.ReadAllText(fileName);
+            _extent = JsonSerializer.Deserialize<List<Aisle>>(json);
         }
-        set
+
+        
+
+        private string _name;
+        public string Name
         {
-            if (String.IsNullOrWhiteSpace(value))
-                throw new ArgumentException("Aisle name cannot be empty");
-            _name = value;
+            get => _name;
+            set
+            {
+                if (string.IsNullOrWhiteSpace(value))
+                    throw new ArgumentException("Aisle name cannot be empty");
+                _name = value;
+            }
         }
-    }
-    
-    public Store Store { get; private set; }
-    
-    internal void SetStore(Store s)
-    {
-        if (s == null)
-            throw new ArgumentException("Store cannot be null.");
-
-        Store = s;
-    }
-    
-    internal void RemoveStore()
-    {
-        Store = null;
-    }
-    
-    private HashSet<Product> _products = new HashSet<Product>();
-
-    public IReadOnlyCollection<Product> Products => _products.ToList().AsReadOnly();
-
-    public void AddProduct(Product p)
-    {
-        if (p == null)
-            throw new ArgumentException("Product cannot be null.");
-
-        if (_products.Contains(p))
-            throw new InvalidOperationException("Product is already in this aisle.");
         
-        if (p.Aisle != null && p.Aisle != this)
-            p.Aisle.RemoveProduct(p);
 
-        _products.Add(p);
+        public Store Store { get; private set; }
+
+     
+        public Aisle(Store store, string name)
+        {
+            if (store == null)
+                throw new ArgumentNullException(nameof(store), "Aisle cannot exist without a Store (Composition rule)");
+
+            Name = name;
+
+            Store = store;
+
+            store.AddAisle(this);
+
+            
+            _extent.Add(this);
+        }
+
+       
+        [Obsolete("Parameterless constructor is only for serialization", true)]
+        public Aisle() { }
+
         
-        p.SetAisle(this);
-    }
 
-    public void RemoveProduct(Product p)
-    {
-        if (p == null)
-            throw new ArgumentException("Product cannot be null.");
+        public void Destroy()
+        {
+            foreach (var p in _products.ToList())
+                RemoveProduct(p);
 
-        if (!_products.Contains(p))
-            throw new InvalidOperationException("Product does not belong to this aisle.");
+            if (Store != null)
+            {
+                Store.RemoveAisle(this);
+                Store = null;
+            }
 
-        _products.Remove(p);
-        
-        p.RemoveAisle();
-    }  
+            _extent.Remove(this);
+        }
 
 
-    public Aisle() { }
 
-    public Aisle(string name) => Name = name;
+        private HashSet<Product> _products = new HashSet<Product>();
+        public IReadOnlyCollection<Product> Products => _products.ToList().AsReadOnly();
 
-    public static void AddAisleToExtent(Aisle a)
-    {
-        if (a == null) 
-            throw new ArgumentException("Aisle cannot be null");
-        _extent.Add(a);
-    }
 
-    public static List<Aisle> GetExtent() => new List<Aisle>(_extent);
+        public void AddProduct(Product p)
+        {
+            if (p == null)
+                throw new ArgumentNullException(nameof(p));
+            
+            if (_products.Contains(p))
+                return;
 
-    public static void SetExtent(List<Aisle> list) => _extent = list ?? new List<Aisle>();
+            _products.Add(p);
+            
+            if (p.Aisle != this)
+                p.SetAisle(this);
+        }
 
-    public static void SaveExtent(string fileName = "aisle_extent.json")
-    {
-        var json = JsonSerializer.Serialize(_extent, new JsonSerializerOptions { WriteIndented = true });
-        File.WriteAllText(fileName, json);
-    }
+        public void RemoveProduct(Product p)
+        {
+            if (p == null)
+                throw new ArgumentNullException(nameof(p));
 
-    public static void LoadExtent(string fileName = "aisle_extent.json")
-    {
-        if (!File.Exists(fileName)) return;
+            if (!_products.Contains(p))
+                throw new InvalidOperationException("Product does not belong to this aisle.");
 
-        var json = File.ReadAllText(fileName);
-        _extent = JsonSerializer.Deserialize<List<Aisle>>(json);
+            _products.Remove(p);
+
+            if (p.Aisle == this)
+                p.RemoveAisle();
+        }
     }
 }
