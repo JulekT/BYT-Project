@@ -47,7 +47,6 @@ public class Supplier
 
         _productsByModel[qualifier] = p;
 
-        // Product’ın supplier referansı ayarlanır
         p.SetSupplier(this);
     }
 
