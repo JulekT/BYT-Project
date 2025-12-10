@@ -39,62 +39,57 @@ namespace Library
                 _name = value;
             }
         }
+
         
 
         public Store Store { get; private set; }
 
-     
+        public void SetStore(Store store)
+        {
+            Store = store;   
+        }
+
         public Aisle(Store store, string name)
         {
             if (store == null)
-                throw new ArgumentNullException(nameof(store), "Aisle cannot exist without a Store (Composition rule)");
+                throw new ArgumentNullException(nameof(store), "Aisle cannot exist without a Store");
 
             Name = name;
 
-            Store = store;
-
             store.AddAisle(this);
 
-            
             _extent.Add(this);
         }
 
-       
-        [Obsolete("Parameterless constructor is only for serialization", true)]
+        [Obsolete("Parameterless constructor for serialization only", true)]
         public Aisle() { }
-
         
 
         public void Destroy()
         {
             foreach (var p in _products.ToList())
                 RemoveProduct(p);
-
-            if (Store != null)
-            {
-                Store.RemoveAisle(this);
-                Store = null;
-            }
-
+            
+            Store = null;
+            
             _extent.Remove(this);
         }
 
-
+        
 
         private HashSet<Product> _products = new HashSet<Product>();
         public IReadOnlyCollection<Product> Products => _products.ToList().AsReadOnly();
-
 
         public void AddProduct(Product p)
         {
             if (p == null)
                 throw new ArgumentNullException(nameof(p));
-            
+
             if (_products.Contains(p))
                 return;
 
             _products.Add(p);
-            
+
             if (p.Aisle != this)
                 p.SetAisle(this);
         }

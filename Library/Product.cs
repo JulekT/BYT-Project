@@ -1,166 +1,138 @@
-﻿using Library;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text.Json;
 
-[Serializable]
-public class Product
+namespace Library
 {
-    private static List<Product> _extent = new();
-    public static List<Product> Extent
+    [Serializable]
+    public class Product
     {
-        get => _extent;
-        set
+       
+
+        private static List<Product> _extent = new();
+        public static IReadOnlyCollection<Product> Extent => _extent.AsReadOnly();
+
+        public static void SaveExtent(string fileName = "product_extent.json")
         {
-            if (value == null)
-                throw new ArgumentException("Product Extent is null");
-            _extent = value;
+            var json = JsonSerializer.Serialize(_extent, new JsonSerializerOptions { WriteIndented = true });
+            File.WriteAllText(fileName, json);
         }
-    }
 
-    private string _name;
-    private string _brand;
-    private string _model;
-    private double _price;
-    private double _cost;
-
-    public string Name
-    {
-        get
+        public static void LoadExtent(string fileName = "product_extent.json")
         {
-            if (String.IsNullOrWhiteSpace(_name))
-                throw new ValueNotAssigned("Product name is empty, you need to assign it first");
-            else
-                return _name;
+            if (!File.Exists(fileName)) return;
+
+            var json = File.ReadAllText(fileName);
+            _extent = JsonSerializer.Deserialize<List<Product>>(json);
         }
-        set
+
+        
+
+        private string _name;
+        private string _brand;
+        private string _model;
+        private double _price;
+        private double _cost;
+
+        public string Name
         {
-            if (String.IsNullOrWhiteSpace(value))
-                throw new ArgumentException("Product name cannot be empty");
-            _name = value;
+            get => _name;
+            set
+            {
+                if (string.IsNullOrWhiteSpace(value))
+                    throw new ArgumentException("Product name cannot be empty");
+                _name = value;
+            }
         }
-    }
 
-    public string Brand
-    {
-        get
+        public string Brand
         {
-            if (String.IsNullOrWhiteSpace(_brand))
-                throw new ValueNotAssigned("Product brand is empty, you need to assign it first");
-            else
-                return _brand;
+            get => _brand;
+            set
+            {
+                if (string.IsNullOrWhiteSpace(value))
+                    throw new ArgumentException("Brand cannot be empty");
+                _brand = value;
+            }
         }
-        set
+
+        public string Model
         {
-            if (String.IsNullOrWhiteSpace(value))
-                throw new ArgumentException("Brand cannot be empty");
-            _brand = value;
+            get => _model;
+            set
+            {
+                if (string.IsNullOrWhiteSpace(value))
+                    throw new ArgumentException("Model cannot be empty");
+                _model = value;
+            }
         }
-    }
 
-    public string Model
-    {
-        get
+        public double Price
         {
-            if (String.IsNullOrWhiteSpace(_model))
-                throw new ValueNotAssigned("Product model is empty, you need to assign it first");
-            else
-                return _model;
+            get => _price;
+            set
+            {
+                if (value <= 0)
+                    throw new ArgumentException("Price must be positive");
+                _price = value;
+            }
         }
-        set
+
+        public double Cost
         {
-            if (String.IsNullOrWhiteSpace(value))
-                throw new ArgumentException("Model cannot be empty");
-            _model = value;
+            get => _cost;
+            set
+            {
+                if (value <= 0)
+                    throw new ArgumentException("Cost must be positive");
+                _cost = value;
+            }
         }
-    }
 
-    public double Price
-    {
-        get
+
+       
+
+        public Supplier Supplier { get; private set; }
+
+        public void SetSupplier(Supplier supplier)
         {
-            if (_price <= 0)
-                throw new NumberIsNotPositive("Price must be positive, you need to assign it first");
-            else
-                return _price;
+            if (supplier == null)
+                throw new ArgumentNullException(nameof(supplier));
+
+            Supplier = supplier;
         }
-        set
+
+        
+
+        public Aisle Aisle { get; private set; }
+
+        public void SetAisle(Aisle aisle)
         {
-            if (value <= 0)
-                throw new ArgumentException("Price must be positivea");
-            _price = value;
+            
+            Aisle = aisle;
         }
-    }
 
-    public double Cost
-    {
-        get
+        public void RemoveAisle()
         {
-            if (_cost <= 0)
-                throw new NumberIsNotPositive("Product cost must be positive, you need to assign it first");
-            else
-                return _cost;
+            Aisle = null;
         }
-        set
+
+
+       
+
+        public Product(string name, string brand, string model, double price, double cost)
         {
-            if (value <= 0)
-                throw new ArgumentException("Cost must be positive");
-            _cost = value;
+            Name = name;
+            Brand = brand;
+            Model = model;
+            Price = price;
+            Cost = cost;
+
+            _extent.Add(this);
         }
+
+        public Product() { }
     }
-
-    public Product() { }
-
-    public Product(string name, string brand, string model, double price, double cost)
-    {
-        Name = name;
-        Brand = brand;
-        Model = model;
-        Price = price;
-        Cost = cost;
-
-        AddProductToExtent(this);
-    }
-
-    public static void AddProductToExtent(Product p)
-    {
-        if (p == null)
-            throw new ArgumentException("Product cannot be null");
-        Extent.Add(p);
-    }
-
-    public static void SetExtent(List<Product> list) => Extent = list ?? new List<Product>();
-
-    public static void SaveExtent(string fileName = "product_extent.json")
-    {
-        var json = JsonSerializer.Serialize(Extent, new JsonSerializerOptions { WriteIndented = true });
-        File.WriteAllText(fileName, json);
-    }
-
-    public static void LoadExtent(string fileName = "product_extent.json")
-    {
-        if (!File.Exists(fileName)) return;
-
-        var json = File.ReadAllText(fileName);
-        Extent = JsonSerializer.Deserialize<List<Product>>(json);
-    }
-
-    public Supplier Supplier { get; private set; }
-
-    public void SetSupplier(Supplier supplier)
-    {
-        if (supplier == null)
-            throw new ArgumentNullException("Supplier cannot be null");
-
-        Supplier = supplier;
-    }
-    public Aisle Aisle { get; private set; }
-
-    internal void SetAisle(Aisle aisle)
-    {
-        Aisle = aisle;
-    }
-
-    internal void RemoveAisle()
-    {
-        Aisle = null;
-    }
-
 }
