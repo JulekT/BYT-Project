@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.IO;
 using System.Text.Json;
+using System.IO;
 
 namespace Library
 {
@@ -25,9 +25,7 @@ namespace Library
             var json = File.ReadAllText(fileName);
             _extent = JsonSerializer.Deserialize<List<Aisle>>(json);
         }
-
         
-
         private string _name;
         public string Name
         {
@@ -40,15 +38,16 @@ namespace Library
             }
         }
 
-        
+
 
         public Store Store { get; private set; }
 
         public void SetStore(Store store)
         {
-            Store = store;   
+            Store = store;
         }
 
+        
         public Aisle(Store store, string name)
         {
             if (store == null)
@@ -69,15 +68,14 @@ namespace Library
         {
             foreach (var p in _products.ToList())
                 RemoveProduct(p);
-            
+
             Store = null;
-            
+
             _extent.Remove(this);
         }
-
         
 
-        private HashSet<Product> _products = new HashSet<Product>();
+        private HashSet<Product> _products = new();
         public IReadOnlyCollection<Product> Products => _products.ToList().AsReadOnly();
 
         public void AddProduct(Product p)
