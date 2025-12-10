@@ -8,13 +8,17 @@ namespace Tests
     {
         private Aisle emptyAisle;
         private Aisle namedAisle;
+        private Store testStore;
 
         [SetUp]
         public void Setup()
         {
-            emptyAisle = new Aisle();
-            namedAisle = new Aisle("Laptops");
+            testStore = new Store("TestStore", "Street", "City", "00-000", "Country");
+
+            emptyAisle = new Aisle(testStore, "EmptyAisle");
+            namedAisle = new Aisle(testStore, "Laptops");
         }
+
     
         [Test]
         public void AisleNameAssignEmptinessException()
