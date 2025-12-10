@@ -9,7 +9,6 @@ namespace Library
     [Serializable]
     public class Product
     {
-       
 
         private static List<Product> _extent = new();
         public static IReadOnlyCollection<Product> Extent => _extent.AsReadOnly();
@@ -28,7 +27,6 @@ namespace Library
             _extent = JsonSerializer.Deserialize<List<Product>>(json);
         }
 
-        
 
         private string _name;
         private string _brand;
@@ -91,8 +89,7 @@ namespace Library
             }
         }
 
-
-       
+    
 
         public Supplier Supplier { get; private set; }
 
@@ -102,15 +99,17 @@ namespace Library
                 throw new ArgumentNullException(nameof(supplier));
 
             Supplier = supplier;
-        }
 
         
+            supplier.AddProduct(this);
+        }
+
+    
 
         public Aisle Aisle { get; private set; }
 
         public void SetAisle(Aisle aisle)
         {
-            
             Aisle = aisle;
         }
 
@@ -118,7 +117,6 @@ namespace Library
         {
             Aisle = null;
         }
-
 
        
 

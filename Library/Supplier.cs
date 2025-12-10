@@ -1,65 +1,86 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
-[Serializable]
-public class Supplier
+namespace Library
 {
-    private static List<Supplier> _extent = new();
-    public static List<Supplier> Extent => _extent;
-
-    private string _name;
-
-    // Qualified association: Model → Product
-    private Dictionary<string, Product> _productsByModel = new();
-
-    public string Name
+    [Serializable]
+    public class Supplier
     {
-        get
+
+
+        private static List<Supplier> _extent = new();
+        public static IReadOnlyCollection<Supplier> Extent => _extent.AsReadOnly();
+
+
+        
+        private string _companyName;
+        public string CompanyName
         {
-            if (string.IsNullOrWhiteSpace(_name))
-                throw new Exception("Supplier name is empty");
-            return _name;
+            get => _companyName;
+            set
+            {
+                if (string.IsNullOrWhiteSpace(value))
+                    throw new ArgumentException("Company name cannot be empty");
+
+                _companyName = value;
+            }
         }
-        set
+
+        private string _contactName;
+        public string ContactName
         {
-            if (string.IsNullOrWhiteSpace(value))
-                throw new ArgumentException("Name cannot be empty");
-            _name = value;
+            get => _contactName;
+            set
+            {
+                if (string.IsNullOrWhiteSpace(value))
+                    throw new ArgumentException("Contact name cannot be empty");
+
+                _contactName = value;
+            }
         }
-    }
+        
 
-    public Supplier(string name)
-    {
-        Name = name;
-        _extent.Add(this);
-    }
+        public Store Store { get; private set; }
 
-    // QUALIFIED ASSOCIATION METHOD
-    public void AddProduct(Product p)
-    {
-        if (p == null)
-            throw new ArgumentNullException("Product cannot be null");
+        internal void SetStore(Store store)
+        {
+            Store = store; 
+        }
+        
 
-        string qualifier = p.Model;  // QUALIFIER = MODEL
+        private HashSet<Product> _products = new();
+        public IReadOnlyCollection<Product> Products => _products.ToList();
 
-        if (_productsByModel.ContainsKey(qualifier))
-            throw new InvalidOperationException($"Product with model {qualifier} already exists for this supplier");
+        public void AddProduct(Product p)
+        {
+            if (p == null)
+                throw new ArgumentNullException(nameof(p));
 
-        _productsByModel[qualifier] = p;
+            if (_products.Contains(p))
+                return;
 
-        p.SetSupplier(this);
-    }
+            _products.Add(p);
+        }
 
-    public Product GetProductByModel(string model)
-    {
-        if (_productsByModel.TryGetValue(model, out var product))
-            return product;
+        public void RemoveProduct(Product p)
+        {
+            if (p == null)
+                throw new ArgumentNullException(nameof(p));
 
-        throw new KeyNotFoundException($"No product found with model {model}");
-    }
+            if (_products.Contains(p))
+                _products.Remove(p);
+        }
+        
 
-    public IReadOnlyDictionary<string, Product> GetAllProducts()
-    {
-        return _productsByModel;
+        public Supplier(string companyName, string contactName)
+        {
+            CompanyName = companyName;
+            ContactName = contactName;
+
+            _extent.Add(this);
+        }
+
+        public Supplier() { }
     }
 }
