@@ -124,10 +124,11 @@ public class Store
 
         if (_aisles.Count == 1)
             throw new InvalidOperationException("A store must have at least one aisle (1..*). Cannot remove the last one.");
-        
-        aisle.Destroy();
 
         _aisles.Remove(aisle);
+
+        aisle.Destroy();
+
     }
 
     public Store() { }

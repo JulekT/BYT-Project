@@ -30,6 +30,4 @@ public class CardPayment : Payment
         this._cardNumber = cardNumber;
         this._cardType = cardType;
     }
-	{
-	}
 }

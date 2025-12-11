@@ -110,13 +110,18 @@ namespace Library
 
         public void SetAisle(Aisle aisle)
         {
- 
-            Aisle = aisle;
+            if(aisle == null)
+                throw new ArgumentNullException(nameof (aisle));
+
+            this.Aisle = aisle;
+            this.Aisle.AddProduct(this);
         }
 
         public void RemoveAisle()
         {
-            Aisle = null;
+            if (Aisle.Products.Contains(this))
+                this.Aisle.RemoveProduct(this);
+            this.Aisle = null;
         }
 
 

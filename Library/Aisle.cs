@@ -99,6 +99,8 @@ namespace Library
 
             if (!_products.Contains(p))
                 throw new InvalidOperationException("Product does not belong to this aisle.");
+            if(_products.Count  == 1)
+                throw new InvalidOperationException("A aisle must have at least one product (1..*). Cannot remove the last one.");
 
             _products.Remove(p);
 
