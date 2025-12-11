@@ -1,106 +1,77 @@
 using System.Text.Json;
 
-namespace Library
+namespace Library;
+
+
+public enum ReportType
 {
-    // Enum for report types (Sales, Employee, Inventory)
-    public enum ReportType
+    Sales,
+    Employee,
+    Inventory
+}
+
+[Serializable]
+public class Report
+{
+    private static List<Report> _extent = new();
+    public static IReadOnlyList<Report> Extent => _extent.AsReadOnly();
+
+    public Manager Manager { get; private set; }
+    public int ReportID { get; private set; }
+    public ReportType Type { get; private set; }
+    public DateTime GeneratedDate { get; private set; }
+    public string? Description { get; private set; }
+
+    private static int _lastID = 0;
+
+    public Report() { } // Needed for JSON deserialization
+
+    public Report(Manager manager, ReportType type, string? description = null)
     {
-        Sales,
-        Employee,
-        Inventory
+        if (manager == null)
+            throw new ArgumentException("Report must be associated with a Manager.");
+
+        Manager = manager;
+        Type = type;
+        Description = description;
+        GeneratedDate = DateTime.Now;
+
+        ReportID = ++_lastID;
+
+        _extent.Add(this);
     }
 
-    public class Report
+    public void Destroy()
     {
-        // Static Auto-Increment ID
-        private static int _lastID = 0;
-        
-        // Fields
-        private ReportType _type;
-        private string? _description;
+        _extent.Remove(this);
+        Manager = null;
+    }
 
-        // Properties (with Validation)
-        public int ReportID { get; private set; }
-
-        public ReportType Type
+    public static void SaveExtent(string fileName = "report_extent.json")
+    {
+        var json = JsonSerializer.Serialize(_extent, new JsonSerializerOptions
         {
-            get => _type;
-            set
-            {
-                _type = value;
-            }
-        }
+            WriteIndented = true
+        });
+        File.WriteAllText(fileName, json);
+    }
 
-        public DateTime GeneratedDate { get; private set; }
+    public static void LoadExtent(string fileName = "report_extent.json")
+    {
+        if (!File.Exists(fileName)) return;
 
-        public string? Description
+        var json = File.ReadAllText(fileName);
+        var list = JsonSerializer.Deserialize<List<Report>>(json);
+        if (list != null)
         {
-            get => _description;
-            set
-            {
-                if (value != null && value.Trim().Length == 0)
-                    throw new ArgumentException("Description cannot be empty string. Use null instead.");
-
-                _description = value;
-            }
-        }
-
-        
-        // Constructors
-        
-        public Report() { } // Required for JSON deserialization
-
-        public Report(ReportType type, string? description = null)
-        {
-            ReportID = ++_lastID;
-            Type = type;
-            GeneratedDate = DateTime.Now;
-            Description = description;
-        }
-
-        // Extent (Static Storage)
-        private static List<Report> _extent = new();
-        public static IReadOnlyList<Report> Extent => _extent;
-
-        public static void AddToExtent(Report r)
-        {
-            if (r == null)
-                throw new ArgumentException("Report cannot be null.");
-
-            _extent.Add(r);
-        }
-        
-        // JSON Persistence
-        
-        public static void SaveExtent(string fileName = "report_extent.json")
-        {
-            var json = JsonSerializer.Serialize(_extent, new JsonSerializerOptions
-            {
-                WriteIndented = true
-            });
-
-            File.WriteAllText(fileName, json);
-        }
-
-        public static void LoadExtent(string fileName = "report_extent.json")
-        {
-            if (!File.Exists(fileName))
-                return;
-
-            var json = File.ReadAllText(fileName);
-            var list = JsonSerializer.Deserialize<List<Report>>(json);
-
-            if (list != null)
-                _extent = list;
-            
+            _extent = list;
             if (_extent.Count > 0)
                 _lastID = _extent.Max(r => r.ReportID);
         }
-        
-        // ToString Override
-        public override string ToString()
-        {
-            return $"Report #{ReportID} | Type: {Type} | Date: {GeneratedDate} | Description: {Description}";
-        }
+    }
+
+    public override string ToString()
+    {
+        return $"Report #{ReportID} | Type: {Type} | Manager: {Manager?.Name} | Date: {GeneratedDate}";
     }
 }
