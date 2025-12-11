@@ -1,5 +1,4 @@
-using System;
-namespace BYT_Project
+namespace Library
 {
     [Serializable]
     public class SalesPerson : Staff

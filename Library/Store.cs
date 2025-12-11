@@ -1,5 +1,6 @@
-﻿using Library;
-using System.Text.Json;
+﻿using System.Text.Json;
+
+namespace Library;
 
 [Serializable]
 public class Store

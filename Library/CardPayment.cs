@@ -1,14 +1,14 @@
-﻿using Library; 
-using System;
+﻿namespace Library;
+public enum CardType
+{
+    Visa = 0,
+    Mastercard = 1
+}
 public class CardPayment : Payment
 {
-	public enum CardType
-	{
-		Visa = 0,
-		Mastercard = 1
-	}
-	private string _cardNumber;
-	private CardType _cardType;
+    
+    private string _cardNumber;
+    private CardType _cardType;
     public string CardNumber
     {
         get
@@ -24,10 +24,12 @@ public class CardPayment : Payment
             _cardNumber = value;
         }
     }
-    public CardPayment(int paymentID, double amount, DateTime date,string cardNumber, CardType cardType)
+    public CardType CardType { get; private set; }
+    public CardPayment(int paymentID, double amount, DateTime date, string cardNumber, CardType cardType)
+        : base(paymentID, amount, date) 
     {
-        base(paymentID,amount,date);
-        this._cardNumber = cardNumber;
-        this._cardType = cardType;
+        CardNumber = cardNumber;
+        CardType = cardType;
     }
+
 }

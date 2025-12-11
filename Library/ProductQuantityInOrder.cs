@@ -1,6 +1,8 @@
-using System;
+namespace Library;
 
 [Serializable]
+
+
 public class ProductQuantityInOrder
 {
     public Product Product { get; private set; }

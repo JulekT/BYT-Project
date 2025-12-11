@@ -1,7 +1,6 @@
-﻿using Library;
-using System.Text.Json;
+﻿using System.Text.Json;
 
-namespace BYT_Project
+namespace Library
 {
     public abstract class Staff
     {
