@@ -77,12 +77,14 @@ namespace Library
             _baseSalary = baseSalary;
         }
 
-        public Staff Manager;
+        public Staff? Manager;
         private HashSet<Staff> _managedStaff = new();
         public IReadOnlyCollection<Staff> ManagedStaff => _managedStaff.ToList().AsReadOnly();
 
         public void AddManager(Staff manager)
         {
+            if (manager == null)
+                throw new ArgumentNullException(nameof(manager));
             this.Manager = manager;
             if(!manager.ManagedStaff.Contains(this))
                 manager.AddManagedStaff(this);
@@ -90,7 +92,7 @@ namespace Library
 
         public void RemoveManager()
         {
-            if(this.Manager.ManagedStaff.Contains(this))
+            if (Manager.ManagedStaff.Contains(this))
                 this.Manager.RemoveManagedStaff(this);
             this.Manager = null;
 
@@ -117,6 +119,30 @@ namespace Library
                 _managedStaff.Remove(staff);
             if (staff.Manager == this)
                 staff.RemoveManager();
+        }
+
+        private HashSet<Shift> _shifts = new();
+        public IReadOnlyCollection<Shift> Shifts => _shifts.ToList().AsReadOnly();
+
+        public void AssignToShift(Shift shift)
+        {
+            if (shift == null)
+                throw new ArgumentNullException(nameof(shift));
+            Shift temp = Shifts.ElementAt(0);
+            if (_shifts.Count != 0 && temp.Store != shift.Store)
+                throw new InvalidOperationException("Staff can only be associated with one Store");
+            _shifts.Add(shift);
+            if (!shift.Staff.Contains(this))
+                shift.AddStaff(this);
+        }
+
+        public void RemoveFromShift(Shift shift)
+        {
+            if (shift == null)
+                throw new ArgumentNullException(nameof(shift));
+            _shifts.Remove(shift);
+            if (shift.Staff.Contains(this))
+                shift.RemoveStaff(this);
         }
 
         public static void AddStaffTToExtent(Staff s)

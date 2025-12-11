@@ -37,6 +37,36 @@ namespace Library
             }
         }
 
+        public Store? Store;
+
+        private HashSet<Staff> _staff = new();
+        public IReadOnlyCollection<Staff> Staff => _staff.ToList().AsReadOnly();
+
+        public void AssignStore(Store store)
+        {
+            Store = store;
+            if (!Store.Shifts.Contains(this))
+                Store.AddShift(this);
+        }
+        public void AddStaff(Staff staff)
+        {
+            _staff.Add(staff);
+            if (!Store.Shifts.Contains(this))
+                return;
+            Store.RemoveShift(this);
+        }
+        public void RemoveStore()
+        {
+            Store = null;
+        }
+        public void RemoveStaff(Staff staff)
+        {
+
+            _staff.Remove(staff);
+            if (staff.Shifts.Contains(this))
+                staff.RemoveFromShift(this);
+        }
+
         public DateTime Date
         {
             get => _date;
