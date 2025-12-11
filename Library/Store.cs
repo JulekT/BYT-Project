@@ -132,6 +132,28 @@ public class Store
 
     }
 
+    private HashSet<Shift> _shifts = new();
+    public IReadOnlyCollection<Shift> Shifts => _shifts.ToList().AsReadOnly();
+
+    public void AddShift(Shift shift)
+    {
+        if (shift == null)
+            throw new ArgumentNullException(nameof(shift));
+        if (_shifts.Contains(shift))
+            return;
+        _shifts.Add(shift);
+        if(shift.Store != this)
+            shift.AssignStore(this);
+    }
+    public void RemoveShift(Shift shift)
+    {
+        if (shift == null)
+            throw new ArgumentNullException(nameof(shift));
+        if (_shifts.Contains(shift))
+            _shifts.Remove(shift);
+        if (shift.Store == this)
+            shift.RemoveStore();
+    }
     public Store() { }
 
     public Store(string name, string street, string city, string postalCode, string country)
