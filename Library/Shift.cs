@@ -4,12 +4,12 @@ namespace Library
 {
     public class Shift
     {
-        // Fields
+       
         private DateTime _startTime;
         private DateTime _endTime;
         private DateTime _date;
         
-        // Properties (With Validation)
+    
         public DateTime StartTime
         {
             get => _startTime;
@@ -50,22 +50,34 @@ namespace Library
         }
         public void AddStaff(Staff staff)
         {
-            _staff.Add(staff);
-            if (!Store.Shifts.Contains(this))
+            if (staff == null)
+                throw new ArgumentNullException(nameof(staff));
+
+            if (_staff.Contains(staff))
                 return;
-            Store.RemoveShift(this);
+
+            _staff.Add(staff);
+            
+            if (!staff.Shifts.Contains(this))
+                staff.AssignToShift(this);
         }
+
         public void RemoveStore()
         {
             Store = null;
         }
         public void RemoveStaff(Staff staff)
         {
+            if (staff == null)
+                throw new ArgumentNullException(nameof(staff));
 
-            _staff.Remove(staff);
+            if (_staff.Contains(staff))
+                _staff.Remove(staff);
+
             if (staff.Shifts.Contains(this))
                 staff.RemoveFromShift(this);
         }
+
 
         public DateTime Date
         {
@@ -79,7 +91,7 @@ namespace Library
             }
         }
 
-        // Constructor
+     
         public Shift() { }
         public Shift(DateTime date, DateTime startTime, DateTime endTime)
         {
@@ -88,24 +100,24 @@ namespace Library
             EndTime = endTime;
         }
 
-        // Derived Business Logic (Conflict Check)
+        
         public bool ConflictsWith(Shift other)
         {
             if (other == null)
                 return false;
 
-            // Only compare shifts on the same date
+          
             if (this.Date.Date != other.Date.Date)
                 return false;
 
-            // Overlapping time intervals indicate a conflict
+            
             bool overlap = this.StartTime < other.EndTime &&
                            other.StartTime < this.EndTime;
 
             return overlap;
         }
         
-        // Class Extent (Static Storage)
+        
         private static List<Shift> _extent = new();
         public static IReadOnlyList<Shift> Extent => _extent;
 
@@ -117,7 +129,6 @@ namespace Library
             _extent.Add(s);
         }
         
-        // Extent Persistence (Save / Load)
         public static void SaveExtent(string fileName = "shift_extent.json")
         {
             var json = JsonSerializer.Serialize(_extent, new JsonSerializerOptions
@@ -140,7 +151,7 @@ namespace Library
                 _extent = list;
         }
         
-        // ToString Override (Nice for Debugging)
+        
         public override string ToString()
         {
             return $"{Date.ToShortDateString()} | {StartTime:HH:mm} - {EndTime:HH:mm}";
