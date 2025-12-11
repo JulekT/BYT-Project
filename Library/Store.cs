@@ -170,4 +170,24 @@ public class Store
         var json = File.ReadAllText(fileName);
         _extent = JsonSerializer.Deserialize<List<Store>>(json);
     }
+    private List<Stock> _stock = new();
+    public IReadOnlyList<Stock> Stock => _stock.AsReadOnly();
+
+    public void AddStock(Stock s)
+    {
+        if (!_stock.Contains(s))
+            _stock.Add(s);
+    }
+
+    public void RemoveStock(Stock s)
+    {
+        _stock.Remove(s);
+    }
+
+    public Stock? GetStockForProduct(Product p)
+    {
+        return _stock.FirstOrDefault(s => s.Product == p);
+    }
+
+
 }
