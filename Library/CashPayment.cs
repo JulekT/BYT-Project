@@ -1,38 +1,45 @@
-namespace Library;
-
-public class CashPayment : Payment
+namespace Library
 {
-    private string _cardNumber;
-    private CardType _cardType;
-
-    public string CardNumber
+    public class CashPayment : Payment
     {
-        get
+        private Cashier _receivedBy;
+        private double _changeGiven;
+
+        public Cashier ReceivedBy
         {
-            if (string.IsNullOrEmpty(_cardNumber))
-                throw new ValueNotAssigned("Card number is null, assign it first.");
-            return _cardNumber;
+            get => _receivedBy;
+            private set
+            {
+                if (value == null)
+                    throw new ArgumentNullException(nameof(ReceivedBy), 
+                        "A cashier must receive the payment.");
+                _receivedBy = value;
+            }
         }
-        set
+
+        public double ChangeGiven
         {
-            if (string.IsNullOrWhiteSpace(value))
-                throw new ArgumentException("Card number cannot be empty.");
-            _cardNumber = value;
+            get => _changeGiven;
+            set
+            {
+                if (value < 0)
+                    throw new ArgumentException("Change given cannot be negative.");
+                _changeGiven = value;
+            }
         }
-    }
 
-    public CardType CardType
-    {
-        get => _cardType;
-        private set => _cardType = value;
-    }
+        public CashPayment(
+            int paymentID, 
+            double amount, 
+            DateTime date,
+            Cashier receivedBy, 
+            double changeGiven
+        ) : base(paymentID, amount, date)
+        {
+            ReceivedBy = receivedBy;
+            ChangeGiven = changeGiven;
 
-    public CashPayment(int paymentID, double amount, DateTime date, string cardNumber, CardType cardType)
-        : base(paymentID, amount, date)
-    {
-        CardNumber = cardNumber;
-        CardType = cardType;
-
-        Payment.AddToExtent(this);
+            Payment.AddToExtent(this);
+        }
     }
 }
