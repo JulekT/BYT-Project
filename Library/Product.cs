@@ -92,14 +92,16 @@ public class Product
 
     public void SetSupplier(Supplier supplier)
     {
+        
         if (supplier == null)
             throw new ArgumentNullException(nameof(supplier));
 
-           
+        
         Supplier = supplier;
-
-        supplier.AddProduct(this);
+        
+        
     }
+
     public void RemoveSupplier()
     {
         Supplier = null;
