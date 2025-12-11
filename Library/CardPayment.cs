@@ -19,7 +19,7 @@ public class CardPayment : Payment
         }
         set
         {
-            if (String.IsNullOrEmpty(value))
+            if (String.IsNullOrWhiteSpace(value))
                 throw new ArgumentNullException("Card number can't be empty");
             _cardNumber = value;
         }
