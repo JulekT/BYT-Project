@@ -114,7 +114,8 @@ namespace Library
                 throw new ArgumentNullException(nameof (aisle));
 
             this.Aisle = aisle;
-            this.Aisle.AddProduct(this);
+            if(!this.Aisle.Products.Contains(this))
+                this.Aisle.AddProduct(this);
         }
 
         public void RemoveAisle()

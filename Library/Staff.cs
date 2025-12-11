@@ -78,6 +78,48 @@ namespace BYT_Project
             _baseSalary = baseSalary;
         }
 
+        public Staff Manager;
+        private HashSet<Staff> _managedStaff = new();
+        public IReadOnlyCollection<Staff> ManagedStaff => _managedStaff.ToList().AsReadOnly();
+
+        public void AddManager(Staff manager)
+        {
+            this.Manager = manager;
+            if(!manager.ManagedStaff.Contains(this))
+                manager.AddManagedStaff(this);
+        }
+
+        public void RemoveManager()
+        {
+            if(this.Manager.ManagedStaff.Contains(this))
+                this.Manager.RemoveManagedStaff(this);
+            this.Manager = null;
+
+        }
+
+        public void AddManagedStaff(Staff staff)
+        {
+            if(staff == null)
+                throw new ArgumentNullException(nameof(staff));
+            if (_managedStaff.Contains(staff))
+                return;
+
+            _managedStaff.Add(staff);
+
+            if (staff.Manager != this)
+                staff.AddManager(this);
+        }
+
+        public void RemoveManagedStaff(Staff staff)
+        {
+            if(staff == null)
+                throw new ArgumentNullException(nameof(staff));
+            if(this._managedStaff.Contains(staff))
+                _managedStaff.Remove(staff);
+            if (staff.Manager == this)
+                staff.RemoveManager();
+        }
+
         public static void AddStaffTToExtent(Staff s)
         {
             if (s == null)
