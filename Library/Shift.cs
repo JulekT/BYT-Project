@@ -4,12 +4,10 @@ namespace Library
 {
     public class Shift
     {
-       
         private DateTime _startTime;
         private DateTime _endTime;
         private DateTime _date;
-        
-    
+
         public DateTime StartTime
         {
             get => _startTime;
@@ -45,9 +43,11 @@ namespace Library
         public void AssignStore(Store store)
         {
             Store = store;
+
             if (!Store.Shifts.Contains(this))
                 Store.AddShift(this);
         }
+
         public void AddStaff(Staff staff)
         {
             if (staff == null)
@@ -56,8 +56,14 @@ namespace Library
             if (_staff.Contains(staff))
                 return;
 
+            if (staff.Store == null)
+                throw new InvalidOperationException("Staff must belong to a Store before being assigned.");
+
+            if (this.Store != staff.Store)
+                throw new InvalidOperationException("Staff cannot work in a Shift belonging to another Store.");
+
             _staff.Add(staff);
-            
+
             if (!staff.Shifts.Contains(this))
                 staff.AssignToShift(this);
         }
@@ -66,6 +72,7 @@ namespace Library
         {
             Store = null;
         }
+
         public void RemoveStaff(Staff staff)
         {
             if (staff == null)
@@ -78,7 +85,6 @@ namespace Library
                 staff.RemoveFromShift(this);
         }
 
-
         public DateTime Date
         {
             get => _date;
@@ -87,12 +93,12 @@ namespace Library
                 if (value == DateTime.MinValue)
                     throw new ArgumentException("Date cannot be empty.");
 
-                _date = value.Date; // Only the day matters
+                _date = value.Date;
             }
         }
 
-     
         public Shift() { }
+
         public Shift(DateTime date, DateTime startTime, DateTime endTime)
         {
             Date = date;
@@ -100,24 +106,20 @@ namespace Library
             EndTime = endTime;
         }
 
-        
         public bool ConflictsWith(Shift other)
         {
             if (other == null)
                 return false;
 
-          
             if (this.Date.Date != other.Date.Date)
                 return false;
 
-            
             bool overlap = this.StartTime < other.EndTime &&
                            other.StartTime < this.EndTime;
 
             return overlap;
         }
-        
-        
+
         private static List<Shift> _extent = new();
         public static IReadOnlyList<Shift> Extent => _extent;
 
@@ -128,7 +130,7 @@ namespace Library
 
             _extent.Add(s);
         }
-        
+
         public static void SaveExtent(string fileName = "shift_extent.json")
         {
             var json = JsonSerializer.Serialize(_extent, new JsonSerializerOptions
@@ -150,8 +152,7 @@ namespace Library
             if (list != null)
                 _extent = list;
         }
-        
-        
+
         public override string ToString()
         {
             return $"{Date.ToShortDateString()} | {StartTime:HH:mm} - {EndTime:HH:mm}";

@@ -3,7 +3,7 @@
 namespace Library
 {
     public abstract class Staff
-    {
+    {   
         private static List<Staff> _extent = new();
         public static List<Staff> Extent
         {
@@ -22,6 +22,7 @@ namespace Library
         private DateTime _employmentDate;
         private double _baseSalary;
 
+        public Store? Store { get; private set; }  
 
         public string Name
         {
@@ -65,7 +66,6 @@ namespace Library
                 int yearsSinceEmployment = EmploymentDate.Year - _employmentDate.Year;
                 return _baseSalary * (1 + YearlySalaryGrowthPercentage * yearsSinceEmployment);
             }
-        
         }
 
         public Staff() { }
@@ -76,6 +76,18 @@ namespace Library
             _employmentDate = employmentDate;
             _baseSalary = baseSalary;
         }
+        
+        public void AssignStore(Store store)
+        {
+            if (store == null)
+                throw new ArgumentNullException(nameof(store));
+
+            if (Store != null && Store != store)
+                throw new InvalidOperationException("Staff cannot be assigned to another Store.");
+
+            Store = store;
+        }
+
 
         public Staff? Manager;
         private HashSet<Staff> _managedStaff = new();
@@ -95,7 +107,6 @@ namespace Library
             if (Manager.ManagedStaff.Contains(this))
                 this.Manager.RemoveManagedStaff(this);
             this.Manager = null;
-
         }
 
         public void AddManagedStaff(Staff staff)
@@ -128,10 +139,16 @@ namespace Library
         {
             if (shift == null)
                 throw new ArgumentNullException(nameof(shift));
-            Shift temp = Shifts.ElementAt(0);
-            if (_shifts.Count != 0 && temp.Store != shift.Store)
-                throw new InvalidOperationException("Staff can only be associated with one Store");
-            _shifts.Add(shift);
+
+            if (Store == null)
+                throw new InvalidOperationException("Staff must belong to a Store before being assigned to a Shift.");
+
+            if (shift.Store != Store)
+                throw new InvalidOperationException("Staff cannot work in a Shift belonging to another Store.");
+
+            if (!_shifts.Contains(shift))
+                _shifts.Add(shift);
+
             if (!shift.Staff.Contains(this))
                 shift.AddStaff(this);
         }
@@ -140,7 +157,9 @@ namespace Library
         {
             if (shift == null)
                 throw new ArgumentNullException(nameof(shift));
+
             _shifts.Remove(shift);
+
             if (shift.Staff.Contains(this))
                 shift.RemoveStaff(this);
         }
