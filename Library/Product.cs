@@ -1,11 +1,11 @@
-﻿using System.Text.Json;
+using System.Text.Json;
 
 namespace Library;
 
 [Serializable]
 public class Product
 {
-     
+    
     private static List<Product> _extent = new();
     public static IReadOnlyCollection<Product> Extent => _extent.AsReadOnly();
 
@@ -24,11 +24,13 @@ public class Product
     }
 
 
+    
     private string _name;
     private string _brand;
     private string _model;
     private double _price;
     private double _cost;
+
 
     public string Name
     {
@@ -87,19 +89,14 @@ public class Product
 
 
   
-
     public Supplier Supplier { get; private set; }
 
     public void SetSupplier(Supplier supplier)
     {
-        
         if (supplier == null)
             throw new ArgumentNullException(nameof(supplier));
 
-        
         Supplier = supplier;
-        
-        
     }
 
     public void RemoveSupplier()
@@ -107,23 +104,27 @@ public class Product
         Supplier = null;
     }
 
+
+   
     public Aisle Aisle { get; private set; }
 
     public void SetAisle(Aisle aisle)
     {
-        if(aisle == null)
-            throw new ArgumentNullException(nameof (aisle));
+        if (aisle == null)
+            throw new ArgumentNullException(nameof(aisle));
 
-        this.Aisle = aisle;
-        if(!this.Aisle.Products.Contains(this))
-            this.Aisle.AddProduct(this);
+        Aisle = aisle;
+
+        if (!aisle.Products.Contains(this))
+            aisle.AddProduct(this);
     }
 
     public void RemoveAisle()
     {
-        if (Aisle.Products.Contains(this))
-            this.Aisle.RemoveProduct(this);
-        this.Aisle = null;
+        if (Aisle != null && Aisle.Products.Contains(this))
+            Aisle.RemoveProduct(this);
+
+        Aisle = null;
     }
 
 
