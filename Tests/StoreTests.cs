@@ -30,5 +30,22 @@ namespace Tests
 
             Assert.IsFalse(store.Stock.Contains(stock));
         }
+        [Test]
+        public void CreateStore_WithValidAddress_ShouldAssignComplexAttribute()
+        {
+            Address address = new Address(
+                "Main Street",
+                "Warsaw",
+                "00-001",
+                "Poland"
+            );
+            Store store = new Store("Test Store", address);
+            
+            Assert.IsNotNull(store.Address);
+            Assert.AreEqual("Warsaw", store.Address.City);
+            Assert.AreEqual("Main Street", store.Address.Street);
+            Assert.AreEqual("00-001", store.Address.PostalCode);
+            Assert.AreEqual("Poland", store.Address.Country);
+        }
     }
 }
