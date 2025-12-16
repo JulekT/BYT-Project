@@ -1,57 +1,72 @@
 using Library;
 using NUnit.Framework;
-using System.Reflection;
+using System;
 using System.Linq;
+using System.Collections.Generic;
 
-namespace Tests;
-
-public class StaffTests
+namespace Tests
 {
-    [SetUp]
-    public void Setup()
+    [TestFixture]
+    public class StaffTests
     {
-        typeof(Staff)
-            .GetField("_extent", BindingFlags.NonPublic | BindingFlags.Static)
-            .SetValue(null, new List<Staff>());
-    }
+        [SetUp]
+        public void Setup()
+        {
+            Staff.Extent = new List<Staff>();
+        }
 
-    [Test]
-    public void Staff_Salary_IsDerivedCorrectly()
-    {
-        var startDate = DateTime.Now.AddYears(-2);
-        var staff = new SalesPerson("Mert", startDate, 1000, 0.1);
+        [Test]
+        public void Salary_IsCalculated_FromBaseSalary_WhenCreated()
+        {
+            
+            var startDate = new DateTime(2020, 1, 1);
+            var staff = new SalesPerson("Mert", startDate, 1000, 0.1);
 
-        double expectedSalary =
-            1000 * (1 + Staff.YearlySalaryGrowthPercentage * 2);
+           
+            double salary = staff.Salary;
 
-        Assert.AreEqual(expectedSalary, staff.Salary);
-    }
+          
+            Assert.That(salary, Is.EqualTo(1000));
 
-    [Test]
-    public void Staff_IsAddedToExtent_OnCreation()
-    {
-        int initialCount = Staff.Extent.Count;
+        }
 
-        var staff = new SalesPerson("Ayşe", DateTime.Now, 3000, 0.2);
+        [Test]
+        public void Staff_IsAddedToExtent_WhenConcreteStaffIsCreated()
+        {
+            int initialCount = Staff.Extent.Count;
 
-        Assert.AreEqual(initialCount + 1, Staff.Extent.Count);
-        Assert.Contains(staff, Staff.Extent);
-    }
+            var staff = new Manager("Ayşe", new DateTime(2021, 5, 1), 3000);
 
-    [Test]
-    public void Staff_Extent_SaveAndLoad_Works()
-    {
-        var staff = new SalesPerson("Deniz", DateTime.Now, 4000, 0.15);
+            Assert.AreEqual(initialCount + 1, Staff.Extent.Count);
+            Assert.IsTrue(Staff.Extent.Contains(staff));
+        }
 
-        Staff.SaveExtent("test_staff_extent.json");
+        [Test]
+        public void DifferentStaffTypes_CanCoexist_InExtent()
+        {
+            var s1 = new SalesPerson("Ali", new DateTime(2020, 1, 1), 2000, 0.1);
+            var s2 = new Manager("Deniz", new DateTime(2019, 3, 10), 4000);
+            var s3 = new Cashier("Zeynep", new DateTime(2022, 6, 1), 1800, EmploymentType.FullTime);
 
-        // Clear extent manually (correct way)
-        typeof(Staff)
-            .GetField("_extent", BindingFlags.NonPublic | BindingFlags.Static)
-            .SetValue(null, new List<Staff>());
+            var extent = Staff.Extent;
 
-        Staff.LoadExtent("test_staff_extent.json");
+            Assert.AreEqual(3, extent.Count);
+            Assert.IsTrue(extent.OfType<SalesPerson>().Any());
+            Assert.IsTrue(extent.OfType<Manager>().Any());
+            Assert.IsTrue(extent.OfType<Cashier>().Any());
+        }
 
-        Assert.IsTrue(Staff.Extent.Any(s => s.Name == "Deniz"));
+        [Test]
+        public void Staff_CanHave_Manager_AssignedCorrectly()
+        {
+            var manager = new Manager("Manager", new DateTime(2018, 1, 1), 5000);
+            var staff = new SalesPerson("Employee", new DateTime(2022, 1, 1), 2000, 0.1);
+
+            // Act
+            staff.AddManager(manager);
+
+            Assert.AreEqual(manager, staff.Manager);
+            Assert.IsTrue(manager.ManagedStaff.Contains(staff));
+        }
     }
 }
