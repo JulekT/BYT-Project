@@ -4,45 +4,54 @@ using NUnit.Framework;
 
 namespace Tests
 {
-    public class PaymentInheritanceTests
+    public class PaymentFlatteningTests
     {
         [Test]
-        public void Payment_CanReference_CashPayment()
+        public void Payment_With_CashDetails_Is_CashType()
         {
             var employmentType =
                 new EmploymentType(EmploymentTypeEnum.FullTime, 20);
 
-            Cashier cashier = new Cashier(
-                "Cashier",
-                DateTime.Now.AddYears(-1),
-                2500,
-                employmentType
-            );
+            var cashier =
+                new Cashier("Cashier", DateTime.Now.AddYears(-1), 2500, employmentType);
 
-            Payment payment = new CashPayment(
-                1,
-                100,
-                DateTime.Now,
-                cashier,
-                0
-            );
+            var details =
+                new CashPaymentDetails(cashier, 0);
 
-            Assert.IsInstanceOf<CashPayment>(payment);
+            Payment payment =
+                new Payment(
+                    1,
+                    100,
+                    DateTime.Now,
+                    PaymentType.Cash,
+                    details
+                );
+
+            Assert.AreEqual(PaymentType.Cash, payment.Type);
+            Assert.IsInstanceOf<CashPaymentDetails>(payment.Details);
             Assert.AreEqual(100, payment.Amount);
         }
 
         [Test]
-        public void Payment_CanReference_CardPayment()
+        public void Payment_With_CardDetails_Is_CardType()
         {
-            Payment payment = new CardPayment(
-                2,
-                250,
-                DateTime.Now,
-                "1234-5678-9012-3456",
-                CardType.Visa
-            );
+            var details =
+                new CardPaymentDetails(
+                    "1234-5678-9012-3456",
+                    CardType.Visa
+                );
 
-            Assert.IsInstanceOf<CardPayment>(payment);
+            Payment payment =
+                new Payment(
+                    2,
+                    250,
+                    DateTime.Now,
+                    PaymentType.Card,
+                    details
+                );
+
+            Assert.AreEqual(PaymentType.Card, payment.Type);
+            Assert.IsInstanceOf<CardPaymentDetails>(payment.Details);
             Assert.AreEqual(250, payment.Amount);
         }
     }
