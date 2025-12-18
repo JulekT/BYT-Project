@@ -46,7 +46,13 @@ namespace Tests
         {
             var s1 = new SalesPerson("Ali", new DateTime(2020, 1, 1), 2000, 0.1);
             var s2 = new Manager("Deniz", new DateTime(2019, 3, 10), 4000);
-            var s3 = new Cashier("Zeynep", new DateTime(2022, 6, 1), 1800, EmploymentType.FullTime);
+            var s3 = new Cashier(
+                "Zeynep",
+                new DateTime(2022, 6, 1),
+                1800,
+                new FullTimeEmployment()
+            );
+
 
             var extent = Staff.Extent;
 

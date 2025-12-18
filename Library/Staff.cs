@@ -61,12 +61,19 @@ namespace Library
             get
             {
                 if (_baseSalary < 0)
-                    throw new NumberIsNotPositive("Staff salary is not positive, that's illigal dude");
+                    throw new NumberIsNotPositive("Staff salary is not positive");
 
-                int yearsSinceEmployment = EmploymentDate.Year - _employmentDate.Year;
-                return _baseSalary * (1 + YearlySalaryGrowthPercentage * yearsSinceEmployment);
+                int yearsSinceEmployment =
+                    (int)((DateTime.Now - EmploymentDate).TotalDays / 365);
+
+                if (yearsSinceEmployment < 0)
+                    yearsSinceEmployment = 0;
+
+                return _baseSalary *
+                       (1 + YearlySalaryGrowthPercentage * yearsSinceEmployment);
             }
         }
+
 
         public Staff() { }
 

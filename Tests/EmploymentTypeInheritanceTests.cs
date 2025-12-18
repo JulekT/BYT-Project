@@ -11,7 +11,7 @@ namespace Tests
             EmploymentType employmentType = new FullTimeEmployment(20);
 
             Assert.IsInstanceOf<FullTimeEmployment>(employmentType);
-            Assert.AreEqual("Full Time", employmentType.Name);
+            Assert.AreEqual("FullTime", employmentType.Name);
             Assert.AreEqual(20, employmentType.HourlyRate);
         }
 
@@ -21,7 +21,7 @@ namespace Tests
             EmploymentType employmentType = new PartTimeEmployment(15);
 
             Assert.IsInstanceOf<PartTimeEmployment>(employmentType);
-            Assert.AreEqual("Part Time", employmentType.Name);
+            Assert.AreEqual("PartTime", employmentType.Name);
             Assert.AreEqual(15, employmentType.HourlyRate);
         }
 
