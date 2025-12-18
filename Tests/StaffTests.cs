@@ -18,16 +18,16 @@ namespace Tests
         [Test]
         public void Salary_IsCalculated_FromBaseSalary_WhenCreated()
         {
-            
             var startDate = new DateTime(2020, 1, 1);
             var staff = new SalesPerson("Mert", startDate, 1000, 0.1);
 
-           
-            double salary = staff.Salary;
+            int years =
+                (int)((DateTime.Now - startDate).TotalDays / 365);
 
-          
-            Assert.That(salary, Is.EqualTo(1250));
+            double expectedSalary =
+                1000 * (1 + Staff.YearlySalaryGrowthPercentage * years);
 
+            Assert.That(staff.Salary, Is.EqualTo(expectedSalary));
         }
 
         [Test]
@@ -35,7 +35,11 @@ namespace Tests
         {
             int initialCount = Staff.Extent.Count;
 
-            var staff = new Manager("Ayşe", new DateTime(2021, 5, 1), 3000);
+            var staff = new Manager(
+                "Ayşe",
+                new DateTime(2021, 5, 1),
+                3000
+            );
 
             Assert.AreEqual(initialCount + 1, Staff.Extent.Count);
             Assert.IsTrue(Staff.Extent.Contains(staff));
@@ -44,15 +48,28 @@ namespace Tests
         [Test]
         public void DifferentStaffTypes_CanCoexist_InExtent()
         {
-            var s1 = new SalesPerson("Ali", new DateTime(2020, 1, 1), 2000, 0.1);
-            var s2 = new Manager("Deniz", new DateTime(2019, 3, 10), 4000);
+            var s1 = new SalesPerson(
+                "Ali",
+                new DateTime(2020, 1, 1),
+                2000,
+                0.1
+            );
+
+            var s2 = new Manager(
+                "Deniz",
+                new DateTime(2019, 3, 10),
+                4000
+            );
+
+            var employmentType =
+                new EmploymentType(EmploymentTypeEnum.FullTime, 18);
+
             var s3 = new Cashier(
                 "Zeynep",
                 new DateTime(2022, 6, 1),
                 1800,
-                new FullTimeEmployment()
+                employmentType
             );
-
 
             var extent = Staff.Extent;
 
@@ -65,10 +82,19 @@ namespace Tests
         [Test]
         public void Staff_CanHave_Manager_AssignedCorrectly()
         {
-            var manager = new Manager("Manager", new DateTime(2018, 1, 1), 5000);
-            var staff = new SalesPerson("Employee", new DateTime(2022, 1, 1), 2000, 0.1);
+            var manager = new Manager(
+                "Manager",
+                new DateTime(2018, 1, 1),
+                5000
+            );
 
-            // Act
+            var staff = new SalesPerson(
+                "Employee",
+                new DateTime(2022, 1, 1),
+                2000,
+                0.1
+            );
+
             staff.AddManager(manager);
 
             Assert.AreEqual(manager, staff.Manager);

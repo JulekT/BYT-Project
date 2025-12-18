@@ -3,34 +3,44 @@ using NUnit.Framework;
 
 namespace Tests
 {
-    public class EmploymentTypeInheritanceTests
+    public class EmploymentTypeFlatteningTests
     {
         [Test]
-        public void EmploymentType_CanReference_FullTimeEmployment()
+        public void EmploymentType_CanRepresent_FullTime()
         {
-            EmploymentType employmentType = new FullTimeEmployment(20);
+            var employmentType =
+                new EmploymentType(EmploymentTypeEnum.FullTime, 20);
 
-            Assert.IsInstanceOf<FullTimeEmployment>(employmentType);
-            Assert.AreEqual("FullTime", employmentType.Name);
+            Assert.AreEqual(
+                EmploymentTypeEnum.FullTime,
+                employmentType.Type
+            );
             Assert.AreEqual(20, employmentType.HourlyRate);
         }
 
         [Test]
-        public void EmploymentType_CanReference_PartTimeEmployment()
+        public void EmploymentType_CanRepresent_PartTime()
         {
-            EmploymentType employmentType = new PartTimeEmployment(15);
+            var employmentType =
+                new EmploymentType(EmploymentTypeEnum.PartTime, 15);
 
-            Assert.IsInstanceOf<PartTimeEmployment>(employmentType);
-            Assert.AreEqual("PartTime", employmentType.Name);
+            Assert.AreEqual(
+                EmploymentTypeEnum.PartTime,
+                employmentType.Type
+            );
             Assert.AreEqual(15, employmentType.HourlyRate);
         }
 
         [Test]
-        public void EmploymentType_IsDisjoint()
+        public void EmploymentType_IsDisjoint_ByEnum()
         {
-            EmploymentType fullTime = new FullTimeEmployment(20);
+            var fullTime =
+                new EmploymentType(EmploymentTypeEnum.FullTime, 20);
 
-            Assert.IsFalse(fullTime is PartTimeEmployment);
+            Assert.AreNotEqual(
+                EmploymentTypeEnum.PartTime,
+                fullTime.Type
+            );
         }
     }
 }

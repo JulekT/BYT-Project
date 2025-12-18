@@ -1,37 +1,19 @@
 namespace Library;
 
-public abstract class EmploymentType
+public class EmploymentType
 {
-    private string _name;
-    private double _hourlyRate;
+    public EmploymentTypeEnum Type { get; private set; }
+    public double HourlyRate { get; private set; }
 
-    public string Name
+    public EmploymentType(EmploymentTypeEnum type, double hourlyRate)
     {
-        get => _name;
-        protected set
-        {
-            if (string.IsNullOrWhiteSpace(value))
-                throw new ArgumentException("Employment type name cannot be empty.");
-            _name = value;
-        }
-    }
+        if (hourlyRate <= 0)
+            throw new ArgumentException("Hourly rate must be positive.");
 
-    public double HourlyRate
-    {
-        get => _hourlyRate;
-        protected set
-        {
-            if (value <= 0)
-                throw new ArgumentException("Hourly rate must be positive.");
-            _hourlyRate = value;
-        }
-    }
-
-    protected EmploymentType(string name, double hourlyRate)
-    {
-        Name = name;
+        Type = type;
         HourlyRate = hourlyRate;
     }
 
-    public override string ToString() => $"{Name} ({HourlyRate}/hour)";
+    public override string ToString()
+        => $"{Type} ({HourlyRate}/hour)";
 }

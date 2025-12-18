@@ -10,33 +10,28 @@ public class Cashier : Staff
         private set
         {
             if (value == null)
-                throw new ArgumentNullException(nameof(EmploymentType), 
+                throw new ArgumentNullException(nameof(EmploymentType),
                     "Cashier must have an employment type.");
             _employmentType = value;
         }
     }
 
-    public Cashier(string name, DateTime employmentDate, double baseSalary, EmploymentType employmentType)
-        : base(name, employmentDate, baseSalary)
+    public Cashier(
+        string name,
+        DateTime employmentDate,
+        double baseSalary,
+        EmploymentType employmentType
+    ) : base(name, employmentDate, baseSalary)
     {
         EmploymentType = employmentType;
-
         Staff.AddStaffTToExtent(this);
     }
 
     public void ChangeEmploymentType(EmploymentType newType)
     {
         if (newType == null)
-            throw new ArgumentNullException(nameof(newType), 
-                "Employment type cannot be null.");
+            throw new ArgumentNullException(nameof(newType));
 
         EmploymentType = newType;
-    }
-
-    public void ProcessOrder(Order order)
-    {
-        if (order == null)
-            throw new ArgumentNullException(nameof(order));
-
     }
 }

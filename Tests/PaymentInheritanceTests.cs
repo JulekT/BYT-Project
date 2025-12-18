@@ -9,11 +9,14 @@ namespace Tests
         [Test]
         public void Payment_CanReference_CashPayment()
         {
+            var employmentType =
+                new EmploymentType(EmploymentTypeEnum.FullTime, 20);
+
             Cashier cashier = new Cashier(
                 "Cashier",
                 DateTime.Now.AddYears(-1),
                 2500,
-                new FullTimeEmployment(20)
+                employmentType
             );
 
             Payment payment = new CashPayment(

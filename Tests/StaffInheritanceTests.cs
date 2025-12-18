@@ -46,16 +46,18 @@ namespace Tests
                 5000
             );
 
+            var employmentType =
+                new EmploymentType(EmploymentTypeEnum.FullTime, 20);
+
             Staff cashier = new Cashier(
                 "Cashier",
                 DateTime.Now.AddYears(-1),
                 2500,
-                new FullTimeEmployment(20)
+                employmentType
             );
 
             Assert.IsInstanceOf<Manager>(manager);
             Assert.IsInstanceOf<Cashier>(cashier);
         }
-
     }
 }
