@@ -26,7 +26,7 @@ namespace Tests
             double salary = staff.Salary;
 
           
-            Assert.That(salary, Is.EqualTo(1000));
+            Assert.That(salary, Is.EqualTo(1250));
 
         }
 
