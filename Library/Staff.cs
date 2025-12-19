@@ -227,7 +227,8 @@ namespace Library
         public void BecomeSalesPerson(double commisionRate = 0)
         {
             IsSalesPerson = true;
-            
+            _commissionRate = commissionRate;
+            _orders = new();
         }
 
         public void StopBeingSalesPerson()
