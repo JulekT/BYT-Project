@@ -74,16 +74,181 @@ namespace Library
             }
         }
 
-
-        public Staff() { }
-
-        public Staff(string name, DateTime employmentDate, double baseSalary)
+        public bool IsManager {get; private set;}
+        public bool IsSalesPerson {get; private set;}
+        public bool IsCashier {get; private set;}
+        
+        public Staff(string name, DateTime employmentDate, double baseSalary,
+            bool isSalesPerson = false, bool isCashier = false, bool isManager = false,
+            double? commissionRate = null, EmploymentType? employmentType = null)
         {
             _name = name;
             _employmentDate = employmentDate;
             _baseSalary = baseSalary;
+            IsSalesPerson = isSalesPerson;
+            IsCashier = isCashier;
+            IsManager = isManager;
+            
+            if (IsSalesPerson)
+            {
+                _commissionRate = commissionRate;
+                _orders = new();
+            }
+
+            if (IsManager)
+            {
+                _reports = new();
+            }
+
+            if (IsCashier)
+            {
+                _employmentType = employmentType;
+            }
         }
         
+        // Cashier
+        private EmploymentType? _employmentType;
+
+        public EmploymentType? EmploymentType
+        {
+            get => _employmentType;
+            private set
+            {
+                if (value == null && !IsCashier)
+                    throw new ValueNotAssigned("Staff is a cashier, employmentType needs to be assigned");
+                _employmentType = value;
+            }
+        }
+        public void ChangeEmploymentType(EmploymentType newType)
+        {
+            if (newType == null && IsCashier)
+                throw new ArgumentNullException(nameof(newType));
+
+            EmploymentType = newType;
+        }
+        
+        // Manager
+        private List<Report>? _reports;
+        public IReadOnlyList<Report>? Reports => _reports.AsReadOnly();
+        public Report GenerateReport(ReportType type, string? description = null)
+        {
+            if(!IsManager)
+                throw new ArgumentException("Staff is not a manager, can't generate report.");
+            var report = new Report(this, type, description);
+
+            _reports.Add(report);
+            return report;
+        }
+        public void ManageShift(Shift shift)
+        {
+            if(!IsManager)
+                throw new ArgumentException("Staff is not a manager, can't manage shift.");
+        }
+
+        public void ManageRefunds(Refund refund)
+        {
+            if(!IsManager)
+                throw new ArgumentException("Staff is not a manager, can't manage refunds.");
+        }
+
+        public void RemoveReport(Report r)
+        {
+            if(!IsManager)
+                throw new ArgumentException("Staff is not a manager, can't manage reports.");
+            if (r == null)
+                throw new ArgumentNullException(nameof(r));
+
+            if (!_reports.Contains(r))
+                throw new InvalidOperationException("This report is not associated with this manager.");
+
+            _reports.Remove(r);
+
+            r.Destroy();
+        }
+        
+        public void Destroy()
+        {
+            foreach (var r in _reports.ToList())
+            {
+                r.Destroy();
+            }
+
+            _reports.Clear();
+        }
+        
+        // SalesPerson
+        private double? _commissionRate;
+        private List<Order>? _orders;
+        public double? CommissionRate
+        {
+            get => _commissionRate;
+            set
+            {
+                if(value == null && !IsSalesPerson)
+                    throw new ValueNotAssigned("Staff is a salesperson, commission cannot has to be assigned.");
+                if (value < 0 || value > 1)
+                    throw new ArgumentException("Commission rate must be between 0 and 1.");
+                _commissionRate = value;
+            }
+        }
+        public Order RegisterOrder(List<(Product product, int quantity)> items)
+        {
+            if (!IsSalesPerson)
+                throw new ArgumentException("Staff is not a salesperson");
+            if (items == null || items.Count == 0)
+                throw new ArgumentException("Order must contain at least one item.");
+
+            Order order = new Order(this);
+
+            foreach (var item in items)
+                order.AddProduct(item.product, item.quantity);
+
+            _orders.Add(order);
+            return order;
+        }
+        // Subclass Changing methods
+        public void BecomeManager()
+        {
+            IsManager = true;
+            _reports = new();
+        }
+
+        public void StopBeingManager()
+        {
+            IsManager = false;
+            foreach (var r in _reports)
+            {
+                r.Destroy();
+            }
+            _reports.Clear();
+            _reports = null;
+        }
+
+        public void BecomeSalesPerson(double commisionRate = 0)
+        {
+            IsSalesPerson = true;
+            
+        }
+
+        public void StopBeingSalesPerson()
+        {
+            IsSalesPerson = false;
+            _commissionRate = null;
+        }
+
+        public void BecomeCashier(EmploymentType employmentType)
+        {
+            IsCashier = true;
+            _employmentType = employmentType;
+        }
+
+        public void StopBeingCashier()
+        {
+            IsCashier = false;
+            _employmentType = null;
+        }
+        
+        // -------------------------------------------------------------
         public void AssignStore(Store store)
         {
             if (store == null)
@@ -112,8 +277,8 @@ namespace Library
         public void RemoveManager()
         {
             if (Manager.ManagedStaff.Contains(this))
-                this.Manager.RemoveManagedStaff(this);
-            this.Manager = null;
+                Manager.RemoveManagedStaff(this);
+            Manager = null;
         }
 
         public void AddManagedStaff(Staff staff)

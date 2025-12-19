@@ -16,7 +16,7 @@ public class Report
     private static List<Report> _extent = new();
     public static IReadOnlyList<Report> Extent => _extent.AsReadOnly();
 
-    public Manager Manager { get; private set; }
+    public Staff Manager { get; private set; }
     public int ReportID { get; private set; }
     public ReportType Type { get; private set; }
     public DateTime GeneratedDate { get; private set; }
@@ -26,7 +26,7 @@ public class Report
 
     public Report() { } // Needed for JSON deserialization
 
-    public Report(Manager manager, ReportType type, string? description = null)
+    public Report(Staff manager, ReportType type, string? description = null)
     {
         if (manager == null)
             throw new ArgumentException("Report must be associated with a Manager.");
