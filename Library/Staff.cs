@@ -114,7 +114,7 @@ namespace Library
             get => _employmentType;
             private set
             {
-                if (value == null && !IsCashier)
+                if (value == null && IsCashier)
                     throw new ValueNotAssigned("Staff is a cashier, employmentType needs to be assigned");
                 _employmentType = value;
             }
