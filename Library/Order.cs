@@ -25,9 +25,9 @@ public class Order
 
 
 
-    public SalesPerson SalesPerson { get; private set; }
+    public Staff SalesPerson { get; private set; }
 
-    public Order(SalesPerson salesPerson)
+    public Order(Staff salesPerson)
     {
         if (salesPerson == null)
             throw new ArgumentException("Order must be associated with a SalesPerson.");
